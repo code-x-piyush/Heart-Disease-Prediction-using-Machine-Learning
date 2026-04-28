@@ -1,0 +1,22 @@
+# render.yaml — Render.com deployment blueprint
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  # ── FastAPI Backend ──────────────────────────────────────────────────────────
+  - type: web
+    name: cardioscope-api
+    runtime: python
+    region: oregon
+    plan: free                          # upgrade for production
+    rootDir: backend
+    buildCommand: |
+      pip install -r requirements.txt
+      python train_model.py
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MODEL_DIR
+        value: model
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+    healthCheckPath: /health
+    autoDeploy: true
